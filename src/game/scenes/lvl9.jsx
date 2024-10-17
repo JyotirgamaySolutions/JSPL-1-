@@ -179,26 +179,28 @@ class MatchingGameScene extends Phaser.Scene {
     for (let i = 0; i < this.totalCircles; i++) {
         const xPos = (i + 1) * spacing;
         const card = this.add.image(xPos, 500, cardNames[i]).setOrigin(0.5).setInteractive();
-        card.number = i + 1;
         card.setDisplaySize(cardWidth, cardHeight);
+
+        // Set the name property of the card correctly
+        card.name = cardNames[i]; // Use the preloaded image names
 
         // Set golden border as a rectangle
         const graphics = this.add.graphics();
         graphics.lineStyle(4, 0xFFD700); // Golden color
         graphics.strokeRect(card.x - card.displayWidth / 2, card.y - card.displayHeight / 2, card.displayWidth, card.displayHeight);
 
-        this.add.text(card.x, card.y + cardHeight / 2 + 20, cardNames[i].replace('_', ''), {
-    fontSize: '15px',
-    fill: '#FFFFFF',
-    // backgroundColor: '#ffffff', // Set the background color to white
-    padding: { left: 8, right: 8, top: 4, bottom: 4 }, // Add padding around the text
-    align: 'center'
-}).setOrigin(0.5);
+        this.add.text(card.x, card.y + cardHeight / 2 + 20, cardNames[i].replace('_', ' '), {
+            fontSize: '15px',
+            fill: '#FFFFFF',
+            padding: { left: 8, right: 8, top: 4, bottom: 4 },
+            align: 'center'
+        }).setOrigin(0.5);
 
         cards.push(card);
     }
     return cards;
 }
+
 
     setupCardInteractivity() {
         this.circleCards.forEach((circleCard) => {
