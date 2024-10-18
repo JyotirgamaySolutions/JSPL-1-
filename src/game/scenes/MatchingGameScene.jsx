@@ -7,7 +7,7 @@ class StartPageScene extends Phaser.Scene {
 
     preload() {
         this.load.image('background1', 'assets/bg2.jpg');
-         this.load.audio('birdSound', 'assets/bird.mp3'); // Preload bird sound
+        this.load.audio('birdSound', 'assets/bird.mp3'); // Preload bird sound
         this.load.script('webglfilter', 'https://cdn.jsdelivr.net/gh/photonstorm/phaser@3.50.0/dist/phaser.js');
     }
 
@@ -15,22 +15,23 @@ class StartPageScene extends Phaser.Scene {
         this.updateLayout();
         this.playBackgroundSound(); // Play bird sound on scene start
         window.addEventListener('resize', () => this.updateLayout());
+
         // Stop audio when scene changes
         this.events.on('shutdown', () => this.stopBackgroundSound());
         this.events.on('destroy', () => this.stopBackgroundSound());
     }
 
-     playBackgroundSound() {
+    playBackgroundSound() {
         const birdSound = this.sound.add('birdSound', { loop: true, volume: 0.5 });
         birdSound.play(); // Play the bird sound with looping enabled
     }
+
     stopBackgroundSound() {
         if (this.birdSound) {
             this.birdSound.stop(); // Stop the bird sound
             this.birdSound.destroy(); // Clean up
         }
     }
-
 
     updateLayout() {
         const { width, height } = this.sys.game.canvas;
@@ -60,8 +61,8 @@ class StartPageScene extends Phaser.Scene {
 
     createRoundedButton(x, y, text, onClick) {
         const button = this.add.graphics();
-        const buttonWidth = Math.min(this.sys.game.canvas.width * 0.25, 200); // Scalable width
-        const buttonHeight = Math.min(this.sys.game.canvas.height * 0.08, 50); // Scalable height
+        const buttonWidth = Math.min(this.sys.game.canvas.width * 0.25, 200);
+        const buttonHeight = Math.min(this.sys.game.canvas.height * 0.08, 50);
         const cornerRadius = 20;
 
         // Draw button background
@@ -103,29 +104,50 @@ class StartPageScene extends Phaser.Scene {
     }
 
     displayInstructionPopup(width, height) {
-        const popupWidth = Math.min(width * 0.5, 400);
-        const popupHeight = Math.min(height * 0.3, 200);
+        const popupWidth = Math.min(width * 0.4, 400);
+        const popupHeight = Math.min(height * 0.3, 250);
+        const isLargeScreen = width >= 1920;
 
+        // Adjust the popup position: center for smaller screens, shifted right for large screens
+        const popupX = isLargeScreen ? width * 0.6 : width / 2 - popupWidth / 2;
+        const popupY = height / 2 - popupHeight / 2;
+
+        // Create popup background with a border
         const popupBackground = this.add.graphics();
-        popupBackground.fillStyle(0x000000, 0.7);
-        popupBackground.fillRoundedRect(width / 2 - popupWidth / 2, height / 2 - popupHeight / 2, popupWidth, popupHeight, 15);
+        popupBackground.fillStyle(0x1a1a1a, 0.9); // Darker background
+        popupBackground.fillRoundedRect(popupX, popupY, popupWidth, popupHeight, 15);
+        popupBackground.lineStyle(3, 0xffffff); // White border
+        popupBackground.strokeRoundedRect(popupX, popupY, popupWidth, popupHeight, 15);
         popupBackground.setDepth(10);
 
-        const instructionText = this.add.text(width / 2, height / 2, 'Instructions: Match the cards based on their type.', {
-            fontSize: '18px',
-            fill: '#ffffff',
-            wordWrap: { width: popupWidth - 50, useAdvancedWrap: true },
-            align: 'center',
-        }).setOrigin(0.5).setDepth(11);
+        // Add instruction text
+        const instructionText = this.add.text(
+            popupX + popupWidth / 2,
+            popupY + popupHeight / 2 - 20,
+            'Instructions: Match the cards based on their type.',
+            {
+                fontSize: '18px',
+                fill: '#ffffff',
+                wordWrap: { width: popupWidth - 40, useAdvancedWrap: true },
+                align: 'center',
+            }
+        ).setOrigin(0.5).setDepth(11);
 
-        const closeButton = this.add.text(width / 2 + popupWidth / 2 - 30, height / 2 - popupHeight / 2 + 10, 'X', {
-            fontSize: '18px',
-            fill: '#ff0000',
-            fontStyle: 'bold',
-            backgroundColor: '#ffffff',
-            padding: { left: 5, right: 5, top: 2, bottom: 2 },
-        }).setInteractive().setDepth(12);
+        // Create close button aligned to the top-right corner
+        const closeButton = this.add.text(
+            popupX + popupWidth - 35,
+            popupY + 10,
+            '✕',
+            {
+                fontSize: '22px',
+                fill: '#ff4d4d',
+                fontStyle: 'bold',
+                backgroundColor: '#2e2e2e',
+                padding: { left: 5, right: 5, top: 2, bottom: 2 },
+            }
+        ).setInteractive().setDepth(12);
 
+        // Close the popup when clicked
         closeButton.on('pointerdown', () => {
             popupBackground.destroy();
             instructionText.destroy();
