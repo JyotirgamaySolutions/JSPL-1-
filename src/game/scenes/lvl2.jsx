@@ -109,7 +109,7 @@ class MatchingGameScene extends Phaser.Scene {
     }).setOrigin(0.5).setDepth(11);
 
     // Add "Yes" button inside the popup
-    const yesButton = this.add.text(x - 70, y + 30, 'Yes', {
+    const yesButton = this.add.text(x - 120, y + 30, 'Yes', {
         fontSize: '22px',
         fill: '#ffffff',
         backgroundColor: '#00ff00',
@@ -143,19 +143,28 @@ class MatchingGameScene extends Phaser.Scene {
     });
 }
 
-    createRectangleCard(width) {
-        const card = this.add.image(width / 2, 190, 'rectangleCard2').setOrigin(0.5).setInteractive();
-        card.setDisplaySize(width / 5, (width / 5) * 1.4); // Set size for the rectangle card
+// Utility to detect if the device is a laptop based on screen height
 
-        // Add click event to show interesting fact
-        card.on('pointerdown', () => {
-            this.displayPopup(card.x, card.y, 'Interesting fact about crops: They benefit greatly from honey bee pollination.', true);
 
-        });
+createRectangleCard(width) {
+    const isLaptop = window.innerHeight < 900;
+    const yPos = isLaptop ? 180 : 300;
+    const card = this.add.image(width / 2, yPos, 'rectangleCard2')
+        .setOrigin(0.5)
+        .setInteractive();
+    
+    card.setDisplaySize(width / 5, (width / 5) * 1.4); // Adjust card size
 
-        // Set golden border
+    // Add click event to show an interesting fact
+    card.on('pointerdown', () => {
+        this.displayPopup(card.x, card.y, 
+            'Interesting fact about crops: They benefit greatly from honey bee pollination.', true
+        );
+    });
+
+    // Add a golden border
     const graphics = this.add.graphics();
-    graphics.lineStyle(4, 0xFFD700); // 0xFFD700 is the golden color
+    graphics.lineStyle(4, 0xFFD700); // Golden color
     graphics.strokeRect(
         card.x - card.displayWidth / 2, 
         card.y - card.displayHeight / 2, 
@@ -163,44 +172,61 @@ class MatchingGameScene extends Phaser.Scene {
         card.displayHeight
     );
 
-        return [card]; // Return an array for consistency
-    }
+    return [card]; // Return an array for consistency
+}
 
-    createCircleCards(width) {
+createCircleCards(width) {
     const cards = [];
     const cardNames = [
         'Wasp', 'Stingless_bees', 'Solitary_bee', 'Moth', 'Honey_bee',
         'Flies', 'Butterfly', 'Bumblebee', 'ANTS'
     ];
-
+const isLaptop = window.innerHeight < 900;
     const spacing = width / (this.totalCircles + 1);
-    const cardWidth = 100;  // Width of the rectangle
-    const cardHeight = 60;  // Height of the rectangle
+    const verticalPosition = isLaptop ? 500 : 800;
+    const cardWidth = isLaptop ? 100 : 110;
+    const cardHeight = isLaptop ? 60 : 80;
+    const fontSize = isLaptop ? '12px' : '20px';
 
     for (let i = 0; i < this.totalCircles; i++) {
         const xPos = (i + 1) * spacing;
-        const card = this.add.image(xPos, 500, cardNames[i]).setOrigin(0.5).setInteractive();
+        const card = this.add.image(xPos, verticalPosition, cardNames[i])
+            .setOrigin(0.5)
+            .setInteractive();
+        
         card.setDisplaySize(cardWidth, cardHeight);
+        card.name = cardNames[i]; // Set name property
 
-        // Set the name property of the card correctly
-        card.name = cardNames[i]; // Use the preloaded image names
-
-        // Set golden border as a rectangle
+        // Add golden border
         const graphics = this.add.graphics();
         graphics.lineStyle(4, 0xFFD700); // Golden color
-        graphics.strokeRect(card.x - card.displayWidth / 2, card.y - card.displayHeight / 2, card.displayWidth, card.displayHeight);
+        graphics.strokeRect(
+            card.x - card.displayWidth / 2, 
+            card.y - card.displayHeight / 2, 
+            card.displayWidth, 
+            card.displayHeight
+        );
 
-        this.add.text(card.x, card.y + cardHeight / 2 + 20, cardNames[i].replace('_', ' '), {
-            fontSize: '15px',
-            fill: '#FFFFFF',
-            padding: { left: 8, right: 8, top: 4, bottom: 4 },
-            align: 'center'
-        }).setOrigin(0.5);
+        // Add label text below each card
+        this.add.text(
+            card.x, 
+            card.y + cardHeight / 2 + 20, 
+            cardNames[i].replace('_', ' '), 
+            {
+                fontSize: fontSize,
+                fill: '#FFFFFF',
+                backgroundColor: '#000000',
+                padding: { left: 8, right: 8, top: 4, bottom: 4 },
+                align: 'center'
+            }
+        ).setOrigin(0.5);
 
         cards.push(card);
     }
+
     return cards;
 }
+
 
 
     setupCardInteractivity() {
