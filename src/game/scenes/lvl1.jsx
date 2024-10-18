@@ -87,63 +87,89 @@ class MatchingGameScene extends Phaser.Scene {
     }
 
     createRectangleCard(width) {
-    const card = this.add.image(width / 2, 190, 'rectangleCard1').setOrigin(0.5).setInteractive();
+    const isLaptop = window.innerWidth <= 1366 && window.innerHeight <= 768; // Detect laptop screen
+
+    // Adjust Y-position for laptop vs. other screens
+    const rectangleY = isLaptop ? 180 : 300;
+
+    // Create the rectangle card with adjusted Y position
+    const card = this.add.image(width / 2, rectangleY, 'rectangleCard1')
+        .setOrigin(0.5).setInteractive();
     card.setDisplaySize(width / 5, (width / 5) * 1.4);
     card.number = 5;
 
-    // Set golden border
+    // Draw golden border
     const graphics = this.add.graphics();
-    graphics.lineStyle(4, 0xFFD700); // 0xFFD700 is the golden color
+    graphics.lineStyle(4, 0xFFD700);
     graphics.strokeRect(
-        card.x - card.displayWidth / 2, 
-        card.y - card.displayHeight / 2, 
-        card.displayWidth, 
+        card.x - card.displayWidth / 2,
+        card.y - card.displayHeight / 2,
+        card.displayWidth,
         card.displayHeight
     );
 
+    // Handle click event with a popup
     card.on('pointerdown', () => {
-        this.displayPopup(card.x, card.y, 'Interesting fact about crops: They benefit greatly from honey bee pollination.', true);
+        this.displayPopup(
+            card.x,
+            card.y,
+            'Interesting fact about crops: They benefit greatly from honey bee pollination.',
+            true
+        );
     });
 
     return [card];
 }
 
 createCircleCards(width) {
+    const isLaptop = window.innerWidth <= 1366 && window.innerHeight <= 768; // Detect laptop screen
+
+    // Adjust vertical position, dimensions, and font size
+    const verticalPosition = isLaptop ? 500 : 800;
+    const cardWidth = isLaptop ? 100 : 110;
+    const cardHeight = isLaptop ? 60 : 80;
+    const fontSize = isLaptop ? '12px' : '20px';
+
     const cards = [];
     const cardNames = [
         'Wasp', 'Stingless_bees', 'Solitary_bee', 'Moth', 'Honey_bee',
         'Flies', 'Butterfly', 'Bumblebee', 'ANTS'
     ];
 
-    const spacing = width / (this.totalCircles + 1);
-    const cardWidth = 100;  // Width of the rectangle
-    const cardHeight = 60;  // Height of the rectangle
+    const spacing = width / (this.totalCircles + 1); // Horizontal spacing
 
     for (let i = 0; i < this.totalCircles; i++) {
         const xPos = (i + 1) * spacing;
-        const card = this.add.image(xPos, 500, cardNames[i]).setOrigin(0.5).setInteractive();
+        
+        const card = this.add.image(xPos, verticalPosition, cardNames[i])
+            .setOrigin(0.5).setInteractive();
         card.number = i + 1;
         card.setDisplaySize(cardWidth, cardHeight);
 
-        // Set golden border as a rectangle
+        // Draw golden border
         const graphics = this.add.graphics();
-        graphics.lineStyle(4, 0xFFD700); // Golden color
-        graphics.strokeRect(card.x - card.displayWidth / 2, card.y - card.displayHeight / 2, card.displayWidth, card.displayHeight);
+        graphics.lineStyle(4, 0xFFD700);
+        graphics.strokeRect(
+            card.x - card.displayWidth / 2,
+            card.y - card.displayHeight / 2,
+            card.displayWidth,
+            card.displayHeight
+        );
 
-        this.add.text(card.x, card.y + cardHeight / 2 + 20, cardNames[i].replace('_', ''), {
-    fontSize: '15px',
-    fill: '#FFFFFF',
-    // backgroundColor: '#ffffff', // Set the background color to white
-    padding: { left: 8, right: 8, top: 4, bottom: 4 }, // Add padding around the text
-    align: 'center'
-}).setOrigin(0.5);
+        // Add label with dynamic font size
+        this.add.text(card.x, card.y + cardHeight / 2 + 30, cardNames[i].replace('_', ' '), {
+            fontSize: fontSize,
+            fill: '#FFFFFF',
+            backgroundColor: '#000000',
+            padding: { left: 8, right: 8, top: 4, bottom: 4 },
+            align: 'center'
+        }).setOrigin(0.5);
 
         cards.push(card);
     }
+
     return cards;
 }
-
-
 
     setupCardInteractivity() {
         this.circleCards.forEach((circleCard) => {
@@ -322,7 +348,6 @@ playCelebrationStarEffect() {
         }
         star.closePath();
         star.fillPath();
-
         return star;
     };
 
