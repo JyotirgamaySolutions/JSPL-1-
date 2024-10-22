@@ -10,7 +10,13 @@ class StartPageScene extends Phaser.Scene {
         this.load.image('background1', '/assets/bg2.jpg');
         this.load.audio('birdSound', '/assets/bird.mp3'); // Use absolute path for Vercel
 
-        console.log('Assets preloaded successfully.');
+        // Ensure the preload completes before proceeding
+        this.load.once('complete', () => {
+            console.log('All assets loaded, including bird sound.');
+        });
+
+        this.load.start(); // Starts the loader if not automatically started
+        console.log('Assets preloading started.');
     }
 
     create() {
@@ -26,6 +32,7 @@ class StartPageScene extends Phaser.Scene {
     }
 
     playBackgroundSound() {
+        // Ensure the sound is not already playing
         if (!this.sound.get('birdSound')) {
             this.birdSound = this.sound.add('birdSound', { loop: true, volume: 0.5 });
 
