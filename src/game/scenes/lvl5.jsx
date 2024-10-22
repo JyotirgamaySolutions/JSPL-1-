@@ -71,8 +71,8 @@ class MatchingGameScene extends Phaser.Scene {
             this.displayPopup(
                 this.sys.game.config.width / 2,
                 this.sys.game.config.height / 2,
-                'Match the circle with the rectangle by dragging.\nClick on the rectangle to see an interesting fact!',
-                true
+                'Match the insect with the crop by dragging.\nClick on the rectangle to see an interesting fact!',
+                
             );
         });
 
@@ -154,7 +154,7 @@ createRectangleCard(width) {
     // Add click event to show an interesting fact
     card.on('pointerdown', () => {
         this.displayPopup(card.x, card.y, 
-            'Interesting fact about crops: They benefit greatly from honey bee pollination.', true
+            'India is the world’s largest spice producer. It is also the largest consumer and exporter of spices. Cardamom is one of the most produced and exported spices.'
         );
     });
 
@@ -269,7 +269,7 @@ const isLaptop = window.innerHeight < 900;
 
             // Only show a congratulatory popup if all correct answers are matched
             if (this.correctMatches.size === this.correctAnswers.length) {
-                this.displayPopup(matchedRectangleCard.x, matchedRectangleCard.y, 'Congratulations! You matched all the correct answers.', true);
+                this.displayPopup(matchedRectangleCard.x, matchedRectangleCard.y, 'Congratulations! You matched all the correct answers.');
                 this.playWinBombEffect(matchedRectangleCard.x, matchedRectangleCard.y);
             }
         }
@@ -278,7 +278,7 @@ const isLaptop = window.innerHeight < 900;
     checkIncorrectAttempts() {
         // Show the correct answer popup if the user reaches 6 incorrect attempts without matching all correct answers
         if (this.incorrectAttempts >= this.maxIncorrectAttempts && this.correctMatches.size < this.correctAnswers.length) {
-            this.displayPopup(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'The correct answers for cashew are ......', true);
+            this.displayPopup(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'The correct answers are Honey bee, Solitary bee' );
         }
     }
 
@@ -288,41 +288,45 @@ const isLaptop = window.innerHeight < 900;
         return distance < threshold;
     }
 
-    displayPopup(x, y, message, hasCloseButton = false) {
-        const popupBackground = this.add.graphics();
-        popupBackground.fillStyle(0x000000, 0.7);
-        popupBackground.fillRoundedRect(x - 150, y - 75, 300, 150, 15);
-        popupBackground.setDepth(10);
+     displayPopup(x, y, message, hasCloseButton = false) {
+    // Create the popup background with rounded corners
+    const popupBackground = this.add.graphics();
+    popupBackground.fillStyle(0x000000, 0.7);  // Set background color and transparency
+    popupBackground.fillRoundedRect(x - 220, y - 75, 440, 200, 40);  // Adjust size and position
+    popupBackground.lineStyle(4, 0xFFD700);  // Add a golden border
+    popupBackground.strokeRoundedRect(x - 220, y - 75, 440, 200, 40);  // Draw the border
+    popupBackground.setDepth(10);  // Ensure it's drawn above other elements
 
-        const popupText = this.add.text(x, y, message, {
-            fontSize: '24px',
-            fill: '#ffffff',
-            wordWrap: { width: 250, useAdvancedWrap: true },
-            align: 'center',
-        }).setOrigin(0.5).setDepth(11);
+    // Add the text within the popup
+    const popupText = this.add.text(x, y, message, {
+        fontSize: '24px',
+        fill: '#ffffff',  // Text color
+        wordWrap: { width: 450, useAdvancedWrap: true },  // Enable word wrapping for long text
+        align: 'center',  // Center the text
+    }).setOrigin(0.5).setDepth(11);  // Make sure the text is centered and above the background
 
-        if (hasCloseButton) {
-            const closeButton = this.add.text(x + 120, y - 50, 'X', {
-                fontSize: '18px',
-                fill: '#ff0000',
-                fontStyle: 'bold',
-                backgroundColor: '#ffffff',
-                padding: { left: 5, right: 5, top: 2, bottom: 2 },
-            }).setInteractive().setDepth(12);
+    if (hasCloseButton) {
+        const closeButton = this.add.text(x + 120, y - 50, 'X', {
+            fontSize: '18px',
+            fill: '#ff0000',
+            fontStyle: 'bold',
+            backgroundColor: '#ffffff',
+            padding: { left: 5, right: 5, top: 2, bottom: 2 },
+        }).setInteractive().setDepth(12);  // Add an interactive close button
 
-            closeButton.on('pointerdown', () => {
-                popupBackground.destroy();
-                popupText.destroy();
-                closeButton.destroy();
-            });
-        } else {
-            this.time.delayedCall(1500, () => {
-                popupBackground.destroy();
-                popupText.destroy();
-            });
-        }
+        closeButton.on('pointerdown', () => {
+            popupBackground.destroy();  // Remove the popup background
+            popupText.destroy();  // Remove the popup text
+            closeButton.destroy();  // Remove the close button
+        });
+    } else {
+        // Auto-destroy the popup after 3 seconds if there's no close button
+        this.time.delayedCall(5000, () => {
+            popupBackground.destroy();
+            popupText.destroy();
+        });
     }
-
+}
     playWinBombEffect(x, y) {
         const particles = this.add.particles('spark');
         const emitter = particles.createEmitter({
