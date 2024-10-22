@@ -15,21 +15,13 @@ class StartPageScene extends Phaser.Scene {
         this.updateLayout();
         this.playBackgroundSound(); // Play bird sound on scene start
         window.addEventListener('resize', () => this.updateLayout());
-
-        // Stop audio when scene changes
-        this.events.on('shutdown', () => this.stopBackgroundSound());
-        this.events.on('destroy', () => this.stopBackgroundSound());
     }
 
     playBackgroundSound() {
-        const birdSound = this.sound.add('birdSound', { loop: true, volume: 0.5 });
-        birdSound.play(); // Play the bird sound with looping enabled
-    }
-
-    stopBackgroundSound() {
-        if (this.birdSound) {
-            this.birdSound.stop(); // Stop the bird sound
-            this.birdSound.destroy(); // Clean up
+        // Check if the sound is already playing
+        if (!this.sound.get('birdSound')) {
+            this.birdSound = this.sound.add('birdSound', { loop: true, volume: 0.5 });
+            this.birdSound.play(); // Play the bird sound with looping enabled
         }
     }
 
@@ -56,7 +48,7 @@ class StartPageScene extends Phaser.Scene {
         // Create buttons with dynamic positions
         this.createRoundedButton(centerX, centerY - 100, 'Play Game', () => this.scene.start('lvl1'));
         this.createRoundedButton(centerX, centerY, 'Instruction', () => this.displayInstructionPopup(width, height));
-        this.createRoundedButton(centerX, centerY + 100, 'Hints', () => this.scene.start('HintsPage'));
+        this.createRoundedButton(centerX, centerY + 100, 'Hints', () => this.displayHintsPopup(width, height));
     }
 
     createRoundedButton(x, y, text, onClick) {
@@ -151,6 +143,58 @@ class StartPageScene extends Phaser.Scene {
         closeButton.on('pointerdown', () => {
             popupBackground.destroy();
             instructionText.destroy();
+            closeButton.destroy();
+        });
+    }
+
+    displayHintsPopup(width, height) {
+        const popupWidth = Math.min(width * 0.4, 400);
+        const popupHeight = Math.min(height * 0.3, 250);
+        const isLargeScreen = width >= 1920;
+
+        // Adjust the popup position: center for smaller screens, shifted right for large screens
+        const popupX = isLargeScreen ? width * 0.6 : width / 2 - popupWidth / 2;
+        const popupY = height / 2 - popupHeight / 2;
+
+        // Create popup background with a border
+        const popupBackground = this.add.graphics();
+        popupBackground.fillStyle(0x1a1a1a, 0.9); // Darker background
+        popupBackground.fillRoundedRect(popupX, popupY, popupWidth, popupHeight, 15);
+        popupBackground.lineStyle(3, 0xffffff); // White border
+        popupBackground.strokeRoundedRect(popupX, popupY, popupWidth, popupHeight, 15);
+        popupBackground.setDepth(10);
+
+        // Add hints text
+        const hintsText = this.add.text(
+            popupX + popupWidth / 2,
+            popupY + popupHeight / 2 - 20,
+            'Hints: You can see interesting facts by clicking on the Crop image.\nDrag the insect card to the center of the crop image.\nYou can see the whole network of this game at the last level after 10 right buttons.',
+            {
+                fontSize: '16px',
+                fill: '#ffffff',
+                wordWrap: { width: popupWidth -60, useAdvancedWrap: true },
+                align: 'center',
+            }
+        ).setOrigin(0.5).setDepth(11);
+
+        // Create close button aligned to the top-right corner
+        const closeButton = this.add.text(
+            popupX + popupWidth - 35,
+            popupY + 10,
+            '✕',
+            {
+                fontSize: '22px',
+                fill: '#ff4d4d',
+                fontStyle: 'bold',
+                backgroundColor: '#2e2e2e',
+                padding: { left: 5, right: 5, top: 2, bottom: 2 },
+            }
+        ).setInteractive().setDepth(12);
+
+        // Close the popup when clicked
+        closeButton.on('pointerdown', () => {
+            popupBackground.destroy();
+            hintsText.destroy();
             closeButton.destroy();
         });
     }
