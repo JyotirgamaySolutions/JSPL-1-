@@ -64,8 +64,8 @@ class MatchingGameScene extends Phaser.Scene {
             this.displayPopup(
                 this.sys.game.config.width / 2,
                 this.sys.game.config.height / 2,
-                'Match the circle with the rectangle by dragging.\nClick on the rectangle to see an interesting fact!',
-                true
+                'Match the insects with the crop card by dragging. Drag the card in centre of the crop card for matching',
+                
             );
         });
 
@@ -113,8 +113,8 @@ class MatchingGameScene extends Phaser.Scene {
         this.displayPopup(
             card.x,
             card.y,
-            'Interesting fact about crops: They benefit greatly from honey bee pollination.',
-            true
+            'In fiscal year 2023, the volume of tamarind production in India is estimated to be 162 thousand metric tons.',
+            
         );
     });
 
@@ -216,7 +216,7 @@ createCircleCards(width) {
         circleCard.setVisible(false);
 
         // Display the correct match popup
-        this.displayPopup(matchedRectangleCard.x, matchedRectangleCard.y, 'You are correct! The answer is Honey Bee.', true);
+        this.displayPopup(matchedRectangleCard.x, matchedRectangleCard.y, 'Congratulations!!! You are correct! The answer is Honey Bee.');
         
         // Play the celebration star effect
         this.playCelebrationStarEffect();
@@ -231,7 +231,7 @@ createCircleCards(width) {
 
     checkIncorrectAttempts() {
         if (this.incorrectAttempts >= this.maxIncorrectAttempts) {
-            this.displayPopup(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'The correct answer is Honey Bee.', true);
+            this.displayPopup(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'Sorry, The correct answer is Honey Bee.');
         }
     }
 
@@ -242,39 +242,45 @@ createCircleCards(width) {
     }
 
     displayPopup(x, y, message, hasCloseButton = false) {
-        const popupBackground = this.add.graphics();
-        popupBackground.fillStyle(0x000000, 0.7);
-        popupBackground.fillRoundedRect(x - 150, y - 75, 300, 150, 15);
-        popupBackground.setDepth(10);
+    // Create the popup background with rounded corners
+    const popupBackground = this.add.graphics();
+    popupBackground.fillStyle(0x000000, 0.7);  // Set background color and transparency
+    popupBackground.fillRoundedRect(x - 220, y - 75, 440, 200, 40);  // Adjust size and position
+    popupBackground.lineStyle(4, 0xFFD700);  // Add a golden border
+    popupBackground.strokeRoundedRect(x - 220, y - 75, 440, 200, 40);  // Draw the border
+    popupBackground.setDepth(10);  // Ensure it's drawn above other elements
 
-        const popupText = this.add.text(x, y, message, {
-            fontSize: '24px',
-            fill: '#ffffff',
-            wordWrap: { width: 250, useAdvancedWrap: true },
-            align: 'center',
-        }).setOrigin(0.5).setDepth(11);
+    // Add the text within the popup
+    const popupText = this.add.text(x, y, message, {
+        fontSize: '24px',
+        fill: '#ffffff',  // Text color
+        wordWrap: { width: 450, useAdvancedWrap: true },  // Enable word wrapping for long text
+        align: 'center',  // Center the text
+    }).setOrigin(0.5).setDepth(11);  // Make sure the text is centered and above the background
 
-        if (hasCloseButton) {
-            const closeButton = this.add.text(x + 120, y - 50, 'X', {
-                fontSize: '18px',
-                fill: '#ff0000',
-                fontStyle: 'bold',
-                backgroundColor: '#ffffff',
-                padding: { left: 5, right: 5, top: 2, bottom: 2 },
-            }).setInteractive().setDepth(12);
+    if (hasCloseButton) {
+        const closeButton = this.add.text(x + 120, y - 50, 'X', {
+            fontSize: '18px',
+            fill: '#ff0000',
+            fontStyle: 'bold',
+            backgroundColor: '#ffffff',
+            padding: { left: 5, right: 5, top: 2, bottom: 2 },
+        }).setInteractive().setDepth(12);  // Add an interactive close button
 
-            closeButton.on('pointerdown', () => {
-                popupBackground.destroy();
-                popupText.destroy();
-                closeButton.destroy();
-            });
-        } else {
-            this.time.delayedCall(1500, () => {
-                popupBackground.destroy();
-                popupText.destroy();
-            });
-        }
+        closeButton.on('pointerdown', () => {
+            popupBackground.destroy();  // Remove the popup background
+            popupText.destroy();  // Remove the popup text
+            closeButton.destroy();  // Remove the close button
+        });
+    } else {
+        // Auto-destroy the popup after 3 seconds if there's no close button
+        this.time.delayedCall(5000, () => {
+            popupBackground.destroy();
+            popupText.destroy();
+        });
     }
+}
+
 
     displayQuitPopup(x, y) {
     // Create the popup background
@@ -292,7 +298,7 @@ createCircleCards(width) {
     }).setOrigin(0.5).setDepth(11);
 
     // Add "Yes" button inside the popup
-    const yesButton = this.add.text(x - 70, y + 30, 'Yes', {
+    const yesButton = this.add.text(x - 120, y + 30, 'Yes', {
         fontSize: '22px',
         fill: '#ffffff',
         backgroundColor: '#00ff00',
