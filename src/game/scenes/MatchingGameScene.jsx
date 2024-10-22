@@ -18,26 +18,21 @@ class StartPageScene extends Phaser.Scene {
     }
 
     playBackgroundSound() {
-        // Check if the sound is already playing
         if (!this.sound.get('birdSound')) {
             this.birdSound = this.sound.add('birdSound', { loop: true, volume: 0.5 });
-            this.birdSound.play(); // Play the bird sound with looping enabled
+            this.birdSound.play();
         }
     }
 
     updateLayout() {
         const { width, height } = this.sys.game.canvas;
+        this.children.removeAll(); // Clear existing elements
 
-        // Clear existing elements if present
-        this.children.removeAll();
-
-        // Create background and apply blur
         const background = this.add.image(0, 0, 'background1')
             .setOrigin(0)
             .setDisplaySize(width, height);
         this.applyBlur(background);
 
-        // Create buttons with updated positions
         this.createButtons(width, height);
     }
 
@@ -46,9 +41,10 @@ class StartPageScene extends Phaser.Scene {
         const centerY = height / 2;
 
         // Create buttons with dynamic positions
-        this.createRoundedButton(centerX, centerY - 100, 'Play Game', () => this.scene.start('lvl1'));
-        this.createRoundedButton(centerX, centerY, 'Instruction', () => this.displayInstructionPopup(width, height));
-        this.createRoundedButton(centerX, centerY + 100, 'Hints', () => this.displayHintsPopup(width, height));
+        this.createRoundedButton(centerX, centerY - 150, 'Play Game', () => this.scene.start('lvl1'));
+        this.createRoundedButton(centerX, centerY - 50, 'Instruction', () => this.displayInstructionPopup(width, height));
+        this.createRoundedButton(centerX, centerY + 50, 'Hints', () => this.displayHintsPopup(width, height));
+        this.createRoundedButton(centerX, centerY + 150, 'Quit', this.quitGame);
     }
 
     createRoundedButton(x, y, text, onClick) {
@@ -57,15 +53,11 @@ class StartPageScene extends Phaser.Scene {
         const buttonHeight = Math.min(this.sys.game.canvas.height * 0.08, 50);
         const cornerRadius = 20;
 
-        // Draw button background
-        button.fillStyle(0x008080, 1); // Teal color
+        button.fillStyle(0x008080, 1);
         button.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, cornerRadius);
-
-        // Add black border
         button.lineStyle(4, 0x000000, 1);
         button.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, cornerRadius);
 
-        // Add text
         const buttonText = this.add.text(0, 0, text, {
             fontSize: `${buttonHeight / 2}px`,
             fill: '#ffffff',
@@ -77,6 +69,10 @@ class StartPageScene extends Phaser.Scene {
             .on('pointerdown', onClick)
             .on('pointerover', () => this.onHover(button))
             .on('pointerout', () => this.onOut(button));
+    }
+
+    quitGame() {
+        window.open('https://rrbcea.vercel.app', '_blank'); // Opens in a new tab
     }
 
     onHover(button) {
