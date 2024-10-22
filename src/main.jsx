@@ -11,6 +11,7 @@ import lvl8 from './game/scenes/lvl8';
 import lvl9 from './game/scenes/lvl9';
 import lvl10 from './game/scenes/lvl10';
 import lvl1 from './game/scenes/lvl1';
+import network from './game/scenes/network';
 const config = {
     type: Phaser.AUTO,
     width: window.innerWidth,
@@ -23,7 +24,7 @@ const config = {
             debug: false
         }
     },
-    scene: [MatchingGameScene, DetailsScene, lvl2, lvl4, lvl5, lvl6, lvl7, lvl8, lvl9 , lvl10, lvl1]
+    scene: [MatchingGameScene, DetailsScene, lvl2, lvl4, lvl5, lvl6, lvl7, lvl8, lvl9 , lvl10, lvl1, network, ]
 };
 
 const game = new Phaser.Game(config);
