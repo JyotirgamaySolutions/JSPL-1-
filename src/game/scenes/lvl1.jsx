@@ -312,7 +312,7 @@ createCircleCards(width) {
         yesButton.destroy();
         noButton.destroy();
         this.scene.stop('lvl1');
-        this.scene.start('StartPageScene'); // Assuming GameOverScene exists.
+        this.scene.start('network'); // Assuming GameOverScene exists.
     });
 
     // Add "No" button inside the popup
