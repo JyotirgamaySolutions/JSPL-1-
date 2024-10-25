@@ -122,7 +122,7 @@ class MatchingGameScene extends Phaser.Scene {
         yesButton.destroy();
         noButton.destroy();
         this.scene.stop('DetailsScene');
-        this.scene.start('StartPageScene'); // Assuming GameOverScene exists.
+        this.scene.start('network'); // Assuming GameOverScene exists.
     });
 
     // Add "No" button inside the popup
