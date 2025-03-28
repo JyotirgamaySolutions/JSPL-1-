@@ -86,9 +86,12 @@ class StartPageScene extends Phaser.Scene {
             .on('pointerdown', onClick);
     }
 
-    quitGame() {
-        window.open('https://rrbcea.vercel.app', '_blank'); // Opens in a new tab
-    }
+    // quitGame() {
+    //     window.open('https://rrbcea.vercel.app', '_blank'); // Opens in a new tab
+    // }
+quitGame() {
+    window.open('http://games.rrbcea.org', '_blank'); // Opens in a new tab
+}
 
     displayInstructionPopup(width, height) {
         const popup = this.createPopup(width, height, 'Instructions: Match the cards based on their type.');
